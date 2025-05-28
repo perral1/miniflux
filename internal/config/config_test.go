@@ -993,6 +993,41 @@ func TestSchedulerEntryFrequencyFactor(t *testing.T) {
 	}
 }
 
+func TestDefaultSchedulerCronSchedule(t *testing.T) {
+	os.Clearenv()
+
+	parser := NewParser()
+	opts, err := parser.ParseEnvironmentVariables()
+	if err != nil {
+		t.Fatalf(`Parsing failure: %v`, err)
+	}
+
+	expected := defaultSchedulerCronSchedule
+	result := opts.SchedulerCronSchedule()
+
+	if result != expected {
+		t.Fatalf(`Unexpected SCHEDULER_CRON_SCHEDULE value, got %v instead of %v`, result, expected)
+	}
+}
+
+func TestSchedulerCronSchedule(t *testing.T) {
+	os.Clearenv()
+	os.Setenv("SCHEDULER_CRON_SCHEDULE", "0 0 * * *")
+
+	parser := NewParser()
+	opts, err := parser.ParseEnvironmentVariables()
+	if err != nil {
+		t.Fatalf(`Parsing failure: %v`, err)
+	}
+
+	expected := "0 0 * * *"
+	result := opts.SchedulerCronSchedule()
+
+	if result != expected {
+		t.Fatalf(`Unexpected SCHEDULER_CRON_SCHEDULE value, got %v instead of %v`, result, expected)
+	}
+}
+
 func TestDefaultSchedulerRoundRobinValue(t *testing.T) {
 	os.Clearenv()
 

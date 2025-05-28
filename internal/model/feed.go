@@ -8,6 +8,7 @@ import (
 	"io"
 	"math"
 	"time"
+	"github.com/adhocore/gronx"
 
 	"miniflux.app/v2/internal/config"
 )
@@ -16,6 +17,7 @@ import (
 const (
 	SchedulerRoundRobin     = "round_robin"
 	SchedulerEntryFrequency = "entry_frequency"
+	SchedulerCron 		    = "cron"
 	// Default settings for the feed query builder
 	DefaultFeedSorting          = "parsing_error_count"
 	DefaultFeedSortingDirection = "desc"
@@ -121,7 +123,11 @@ func (f *Feed) ScheduleNextCheck(weeklyCount int, refreshDelayInMinutes int) int
 	// Default to the global config Polling Frequency.
 	intervalMinutes := config.Opts.SchedulerRoundRobinMinInterval()
 
-	if config.Opts.PollingScheduler() == SchedulerEntryFrequency {
+	switch config.Opts.PollingScheduler() {
+	case SchedulerCron:
+		nextTime, _ := gronx.NextTick(config.Opts.SchedulerCronSchedule(), false)
+		intervalMinutes = int(time.Until(nextTime).Minutes())
+	case SchedulerEntryFrequency:
 		if weeklyCount <= 0 {
 			intervalMinutes = config.Opts.SchedulerEntryFrequencyMaxInterval()
 		} else {

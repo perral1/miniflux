@@ -15,6 +15,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/adhocore/gronx"
 )
 
 // Parser handles configuration parsing.
@@ -162,6 +164,11 @@ func (p *Parser) parseLines(lines []string) (err error) {
 			p.opts.schedulerRoundRobinMinInterval = parseInt(value, defaultSchedulerRoundRobinMinInterval)
 		case "SCHEDULER_ROUND_ROBIN_MAX_INTERVAL":
 			p.opts.schedulerRoundRobinMaxInterval = parseInt(value, defaultSchedulerRoundRobinMaxInterval)
+		case "SCHEDULER_CRON_SCHEDULE":
+			p.opts.schedulerCronSchedule = parseString(value, defaultSchedulerCronSchedule)
+			if !gronx.IsValid(p.opts.schedulerCronSchedule) {
+				return fmt.Errorf("config: invalid SCHEDULER_CRON_SCHEDULE value: %s", p.opts.schedulerCronSchedule)
+			}
 		case "POLLING_PARSING_ERROR_LIMIT":
 			p.opts.pollingParsingErrorLimit = parseInt(value, defaultPollingParsingErrorLimit)
 		case "PROXY_IMAGES":

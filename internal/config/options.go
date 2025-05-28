@@ -38,6 +38,7 @@ const (
 	defaultSchedulerEntryFrequencyFactor      = 1
 	defaultSchedulerRoundRobinMinInterval     = 60
 	defaultSchedulerRoundRobinMaxInterval     = 1440
+	defaultSchedulerCronSchedule              = "0 * * * *" // Every hour
 	defaultPollingParsingErrorLimit           = 3
 	defaultRunMigrations                      = false
 	defaultDatabaseURL                        = "user=postgres password=postgres dbname=miniflux2 sslmode=disable"
@@ -139,6 +140,7 @@ type Options struct {
 	schedulerEntryFrequencyFactor      int
 	schedulerRoundRobinMinInterval     int
 	schedulerRoundRobinMaxInterval     int
+	schedulerCronSchedule		       string
 	pollingParsingErrorLimit           int
 	workerPoolSize                     int
 	createAdmin                        bool
@@ -223,6 +225,7 @@ func NewOptions() *Options {
 		schedulerEntryFrequencyFactor:      defaultSchedulerEntryFrequencyFactor,
 		schedulerRoundRobinMinInterval:     defaultSchedulerRoundRobinMinInterval,
 		schedulerRoundRobinMaxInterval:     defaultSchedulerRoundRobinMaxInterval,
+		schedulerCronSchedule:              defaultSchedulerCronSchedule,
 		pollingParsingErrorLimit:           defaultPollingParsingErrorLimit,
 		workerPoolSize:                     defaultWorkerPoolSize,
 		createAdmin:                        defaultCreateAdmin,
@@ -438,6 +441,10 @@ func (o *Options) SchedulerRoundRobinMinInterval() int {
 
 func (o *Options) SchedulerRoundRobinMaxInterval() int {
 	return o.schedulerRoundRobinMaxInterval
+}
+
+func (o *Options) SchedulerCronSchedule() string {
+	return o.schedulerCronSchedule
 }
 
 // PollingParsingErrorLimit returns the limit of errors when to stop polling.
@@ -786,6 +793,7 @@ func (o *Options) SortedOptions(redactSecret bool) []*Option {
 		"SCHEDULER_ENTRY_FREQUENCY_FACTOR":       o.schedulerEntryFrequencyFactor,
 		"SCHEDULER_ROUND_ROBIN_MIN_INTERVAL":     o.schedulerRoundRobinMinInterval,
 		"SCHEDULER_ROUND_ROBIN_MAX_INTERVAL":     o.schedulerRoundRobinMaxInterval,
+		"SCHEDULER_CRON_SCHEDULE":                o.schedulerCronSchedule,
 		"SCHEDULER_SERVICE":                      o.schedulerService,
 		"SERVER_TIMING_HEADER":                   o.serverTimingHeader,
 		"WATCHDOG":                               o.watchdog,
