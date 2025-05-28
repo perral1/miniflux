@@ -7,6 +7,7 @@ go 1.26.0
 
 require (
 	github.com/PuerkitoBio/goquery v1.12.0
+	github.com/adhocore/gronx v1.19.6
 	github.com/andybalholm/brotli v1.2.2
 	github.com/coreos/go-oidc/v3 v3.20.0
 	github.com/go-webauthn/webauthn v0.17.4

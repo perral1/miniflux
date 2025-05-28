@@ -16,6 +16,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/adhocore/gronx"
 )
 
 type configParser struct {
@@ -174,6 +176,13 @@ func (cp *configParser) parseLine(key, value string) error {
 	if field.validator != nil {
 		if err := field.validator(value); err != nil {
 			return fmt.Errorf("invalid value for key %s: %v", key, err)
+		}
+	}
+
+	if key == "SCHEDULER_CRON_SCHEDULE" {
+		schedule := parseStringValue(value, field.parsedStringValue)
+		if !gronx.IsValid(schedule) {
+			return fmt.Errorf("invalid value for key %s: invalid cron expression %q", key, schedule)
 		}
 	}
 

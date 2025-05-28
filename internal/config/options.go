@@ -35,6 +35,11 @@ const (
 	bytesType
 )
 
+const (
+	defaultPollingScheduler      = "round_robin"
+	defaultSchedulerCronSchedule = "0 * * * *"
+)
+
 type configValue struct {
 	parsedStringValue string
 	parsedBoolValue   bool
@@ -509,11 +514,11 @@ func NewConfigOptions() *configOptions {
 				},
 			},
 			"POLLING_SCHEDULER": {
-				parsedStringValue: "round_robin",
-				rawValue:          "round_robin",
+				parsedStringValue: defaultPollingScheduler,
+				rawValue:          defaultPollingScheduler,
 				valueType:         stringType,
 				validator: func(rawValue string) error {
-					return validateChoices(rawValue, []string{"round_robin", "entry_frequency"})
+					return validateChoices(rawValue, []string{"round_robin", "entry_frequency", "cron"})
 				},
 			},
 			"PORT": {
@@ -568,6 +573,11 @@ func NewConfigOptions() *configOptions {
 				validator: func(rawValue string) error {
 					return validateGreaterOrEqualThan(rawValue, 1)
 				},
+			},
+			"SCHEDULER_CRON_SCHEDULE": {
+				parsedStringValue: defaultSchedulerCronSchedule,
+				rawValue:          defaultSchedulerCronSchedule,
+				valueType:         stringType,
 			},
 			"TRUSTED_REVERSE_PROXY_NETWORKS": {
 				parsedStringList: []string{},
@@ -986,6 +996,10 @@ func (c *configOptions) SchedulerRoundRobinMaxInterval() time.Duration {
 
 func (c *configOptions) SchedulerRoundRobinMinInterval() time.Duration {
 	return c.options["SCHEDULER_ROUND_ROBIN_MIN_INTERVAL"].parsedDuration
+}
+
+func (c *configOptions) SchedulerCronSchedule() string {
+	return c.options["SCHEDULER_CRON_SCHEDULE"].parsedStringValue
 }
 
 func (c *configOptions) TrustedReverseProxyNetworks() []string {

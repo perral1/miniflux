@@ -98,6 +98,29 @@ func TestFeedScheduleNextCheckRoundRobinDefault(t *testing.T) {
 	checkTargetInterval(t, feed, targetInterval, timeBefore, "TestFeedScheduleNextCheckRoundRobinDefault")
 }
 
+func TestFeedScheduleNextCheckCron(t *testing.T) {
+	os.Clearenv()
+	os.Setenv("POLLING_SCHEDULER", "cron")
+	os.Setenv("SCHEDULER_CRON_SCHEDULE", "*/5 * * * *")
+
+	parser := config.NewConfigParser()
+	var err error
+	config.Opts, err = parser.ParseEnvironmentVariables()
+	if err != nil {
+		t.Fatalf(`Parsing failure: %v`, err)
+	}
+
+	feed := &Feed{}
+	interval := feed.ScheduleNextCheck(0, noRefreshDelay)
+
+	if interval <= 0 || interval > 5*time.Minute {
+		t.Fatalf("Expected cron interval between 0 and 5 minutes, got %s", interval)
+	}
+	if feed.NextCheckAt.IsZero() {
+		t.Fatal(`The next_check_at must be set`)
+	}
+}
+
 func TestFeedScheduleNextCheckRoundRobinWithRefreshDelayAboveMinInterval(t *testing.T) {
 	os.Clearenv()
 

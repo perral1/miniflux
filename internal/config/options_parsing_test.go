@@ -1088,6 +1088,14 @@ func TestPollingSchedulerOptionParsing(t *testing.T) {
 	if configParser.options.PollingScheduler() != "entry_frequency" {
 		t.Fatalf("Expected POLLING_SCHEDULER to be 'entry_frequency'")
 	}
+
+	if err := configParser.parseLines([]string{"POLLING_SCHEDULER=cron"}); err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+
+	if configParser.options.PollingScheduler() != "cron" {
+		t.Fatalf("Expected POLLING_SCHEDULER to be 'cron'")
+	}
 }
 
 func TestPortOptionParsing(t *testing.T) {
@@ -1156,6 +1164,26 @@ func TestSchedulerEntryFrequencyFactorOptionParsing(t *testing.T) {
 
 	if err := configParser.parseLines([]string{"SCHEDULER_ENTRY_FREQUENCY_FACTOR=-1"}); err == nil {
 		t.Fatalf("Expected an error for SCHEDULER_ENTRY_FREQUENCY_FACTOR=-1")
+	}
+}
+
+func TestSchedulerCronScheduleOptionParsing(t *testing.T) {
+	configParser := NewConfigParser()
+
+	if configParser.options.SchedulerCronSchedule() != defaultSchedulerCronSchedule {
+		t.Fatalf("Expected SCHEDULER_CRON_SCHEDULE to be %q by default", defaultSchedulerCronSchedule)
+	}
+
+	if err := configParser.parseLines([]string{"SCHEDULER_CRON_SCHEDULE=0 0 * * *"}); err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
+
+	if configParser.options.SchedulerCronSchedule() != "0 0 * * *" {
+		t.Fatalf("Expected SCHEDULER_CRON_SCHEDULE to be updated")
+	}
+
+	if err := configParser.parseLines([]string{"SCHEDULER_CRON_SCHEDULE=not-a-cron"}); err == nil {
+		t.Fatal("Expected invalid cron expression to fail")
 	}
 }
 
